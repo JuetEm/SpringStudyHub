@@ -1,0 +1,26 @@
+package org.zerock.web;
+
+import org.slf4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+public class SampleController {
+
+	String className = this.getClass().getSimpleName();
+	private static final Logger logger = org.slf4j.LoggerFactory.getLogger(SampleController.class);
+	
+	@RequestMapping("doA")
+	public void doA(){
+		
+		logger.info(className+"'s doA called....................");
+		
+	}
+	
+	@RequestMapping("doB")
+	public void doB(){
+		
+		logger.info(className+"'s doB called....................");
+		
+	}
+}
