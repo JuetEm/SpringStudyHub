@@ -84,6 +84,7 @@ public class BoardController {
 	 * 					Spring MVC에서 제공하는 데이터 전달용 객체
 	 * 					Map과 유사하게 '키(key)'와 '값(value)'으로 데이터를 저장하는 역할
 	 * 					과거 Servlet에서는 RequestDispatcher에 데이터 저장했듯이, Spring에서는 Model 이용
+	 * 
 	 *
 	 * @param board
 	 * @param model
