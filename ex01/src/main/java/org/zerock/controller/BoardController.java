@@ -101,9 +101,25 @@ public class BoardController {
 		
 		model.addAttribute("result", "success");
 		
-		/*modle 객체에 저장된 결과를 리턴하는 실제 경로 
+		/*model 객체에 저장된 결과를 리턴하는 실제 경로 
 		 *  '/WEB-INF/views/board/success.jsp' */
-		return "/board/success";
+//		return "/board/success";
+		/*success page 새로고침 시 같은 데이터 재전송 등으로 인한 글 중복 등록을 막기 위하여
+		 * redirect 시켜준다.*/
+		return "redirect:/board/listAll";
 	}
-
+	
+	/**
+	 * @author	: Juet
+	 * @date	: 2018. 1. 24.
+	 * @desc	: 리다이렉트 된 경우 보여질 화면 및 로직을 담고있는 메서드
+	 *
+	 * @param model
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/listAll", method = RequestMethod.GET)
+	public void listAll(Model model)throws Exception {
+		
+		logger.info("show all list ...........");
+	}
 }

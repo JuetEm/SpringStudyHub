@@ -19,7 +19,7 @@
 						<h3 class="box-title">REGISTER BOARD</h3>
 					</div>	 
 					<!-- /.box-header -->
-		<form role="form" metho="post">
+		<form role="form" method="post">
 			<div class="box-body">
 				<div class="form-group">
 					<label for="exampleInputEmail1">Title</label>
