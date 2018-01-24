@@ -91,7 +91,7 @@ public class BoardController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public String registPOST(BoardVO board, Model model) throws Exception { 
+	public String registPOST(BoardVO board, Model model) throws Exception {
 		
 		logger.info("register post ...........");
 		logger.info(board.toString());
