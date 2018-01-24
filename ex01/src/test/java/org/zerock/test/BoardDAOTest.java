@@ -39,20 +39,20 @@ public class BoardDAOTest {
 //		dao.create(board);
 //	}
 	
-//	@Test
-//	public void testRead() throws Exception {
-//		
-//		logger.info(dao.read(1).toString());
-//	}
-	
 	@Test
-	public void testUpdate() throws Exception{
-		BoardVO board = new BoardVO();
-		board.setBno(1);
-		board.setTitle("수정된 글 제목입니다.");
-		board.setContent("수정된 글 내용입니다.");
-		dao.update(board);
+	public void testRead() throws Exception {
+		
+		logger.info(dao.read(1).toString());
 	}
+	
+//	@Test
+//	public void testUpdate() throws Exception{
+//		BoardVO board = new BoardVO();
+//		board.setBno(1);
+//		board.setTitle("수정된 글 제목입니다.");
+//		board.setContent("수정된 글 내용입니다.");
+//		dao.update(board);
+//	}
 //	
 //	@Test
 //	public void testDelete() throws Exception {
