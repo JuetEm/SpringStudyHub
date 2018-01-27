@@ -52,7 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 	
 	<delete id="delete">
-	delete from tbl_board where bon=#{bno}
+	delete from tbl_board where bno=#{bno}
 	</delete>
 	
 	<select id="listAll" resultType="org.zerock.domain.BoardVO">

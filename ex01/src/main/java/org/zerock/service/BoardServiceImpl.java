@@ -3,6 +3,7 @@
  */
 package org.zerock.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -66,6 +67,31 @@ public class BoardServiceImpl implements BoardService {
 	public List<BoardVO> listAll() throws Exception {
 		// TODO Auto-generated method stub
 		return dao.listAll();
+	}
+	
+	public String nullCheck(BoardVO board){
+		String msg = "";
+		ArrayList<String> nMList = new ArrayList<>();
+		if(board.getTitle() == null||board.getTitle().equals("")){
+			nMList.add("제목");
+		}
+		if(board.getContent() == null||board.getContent().equals("")){
+			nMList.add("내용");
+		}
+		if(board.getWriter() == null||board.getWriter().equals("")){
+			nMList.add("작성인");
+		}
+		
+		if(nMList.size()>0){
+			msg = "해당 글의 ";
+			for(String nullMessage:nMList){
+				msg += nullMessage+", ";
+			}
+			msg = msg.substring(0, msg.length()-2);
+			msg += "을 입력해주세요.";
+		}
+		
+		return msg;
 	}
 
 }

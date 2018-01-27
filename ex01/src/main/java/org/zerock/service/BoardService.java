@@ -27,4 +27,5 @@ public interface BoardService {
 	
 	public List<BoardVO> listAll() throws Exception;
 	
+	public String nullCheck(BoardVO board) throws Exception;
 }
