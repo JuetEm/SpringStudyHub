@@ -45,6 +45,166 @@ import org.zerock.service.BoardService;
  * 3. 바인딩(Binding) : 요청(Requset)의 자동 처리 => 브라우저에서 들어오는 요청(request)이 자동으로 parameter로 지정한 클래스의 객체 속성값으로 처리됨
  * 4. Spring MVC의 Model 객체는 해당 메소드에서 뷰(jsp 등)에 필요한 데이터를 전달하는 용도로 사용됨 
  * 		=> 메소드 내에서 뷰에 전달할 데이터가 있다면 Model을 parameter로 선언해 주는 것이 편리함
+ * 
+ * Spring MVC Model 을 사용 할 경우 객체간 연결을 자동으로 해주는 간편함이 존재함과 동시에 구조에 대한 이해 없이는
+ * 사용하기가 무척 어렵다는  난점 역시 존재한다.
+ * 
+ * Controller Return Type에 대한 이해 역시 위와 같은 측면의 필요성에서 간단히 정리하고자 한다.
+ * 
+ * 아래 Controller의 메소드들을 보면 어떤 메소드는 리던 타입이 정의 되어 있고, 어떤 메소드는 리턴타입이 void로 정의되어 있지 않다.
+ * return Type의 정의와 상관 없이 jsp 파일이 존재하고 코드에 오류가 없을 경우 해당 페이지는 정상 동작하는 모습을 알 수 있다.
+ * 
+ * Controller Method의 리턴 값의 종류는??
+ * 
+ * 1. 자동 추가 모델 오브젝트
+ * @ModelAttribute 모델 오브젝트(커맨드 오브젝트)
+ * => @ModelAttribute를 붙이거나, 생략 하였더라도 단순 오브젝트가 아니라서 커맨드 옵젝트로 처리되는 옵젝트인 경우
+ * 컨트롤러가 리던하는 model 에 자동 추가된다. 기본적으로 옵젝트 이름은 파라미터 타입 이름을 따른다. 
+ * 지정하고 싶은 경우 @ModelAttribute("모델이름") 방식으로 지정하면 된다.
+ * 
+ * Ex)	public void add (@ModelAttribute("user") User user)
+ * 	  	public void add (@ModelAttribute User user)
+ * 		public void add (User user)
+ * 
+ * 2. Model / Map / ModelMap 파라미터
+ * => 컨트롤러 메소드에 위 타입의 파라미터를 사용하면 Spring MVC 에서 생성된 모델 맵 객체에 값을 추가하여 뷰로 전달 할 수 있다.
+ * 위 타입 객체는 DispatcherServlet을 통해 뷰에 전달되는 모델 객체에 자동으로 추가 된다.
+ * ModelAndView를 통해 별도로 뷰를 전달하는 경우에도 맵에 추가한 객체는 빠짐없이 모델에 추가하여 전달
+ * 
+ * 3. @ModelAttribute 메소드가 생성하는 객체
+ * => @ModelAttribute 는 컨트롤러 클래스의 메소드 단위로도 객체 생성 가능, 메소드 레벨에도 부여 가능
+ * 메소드 레벨에서 @ModelAttribute를 사용하여 객체를 생성하는 경우 @RequestMapping 붙이지 말아야 함
+ * 	=> Controller 기능이 아니라 객체를 생성하여 공유하는 경우 사용하기 때문
+ * 
+ *  Ex)	@ModelAttribute("categories")
+ *  	public void commonCategories(){
+ *  		return service.getCommonCategories();
+ *  	}
+ *  위 예와 같이 @ModelAttribute("categories") 객체를 지정해주는 경우 해당 클래스에 존재하는 모든 Controller의 
+ *  리턴 값(모델)에 categories라는 변수가 자동 추가됨.
+ *  예컨데 검색 조건, 게시판의 카테고리, 참조 정보의 목록 등 컨트롤러와 맵핑된 뷰 전반에서 다루는 정보를 
+ *  Controller 내부 모든 메소드가 공유해 사용하기 위해서 사용한다.
+ *  
+ *  @ModelAttribute 태깅을 통해 사용할 정보가 많다면 여러 메소드에 매핑하여 사용 할 수 있다.
+ *  (위와 같은 메소드를 여러개 만들 수 있음)
+ * 
+ * 4. BindingResult
+ * => @ModelAttribute 와 마찬가지로 모델에 자동 추가된다.
+ * 모델 맵에 추가 될 때의 키는 "org.springframework.validation.BindingResult.모델이름"
+ * 	=> springframework 단위의 관리 차원에서 쓰이는 값으로 변수로 활용하여 직접적으로 사용하는 경우는 거의 없다고 함
+ *
+ * Ex) 모델 이름이 user인 경우
+ * 		org.springframework.validation.BindingResult.user
+ * 
+ * 5. ModelAndView
+ * => ModelAndView는 컨트롤러가 리턴해야 할 값을 담고 있는 가장 대표적인 타입
+ * 
+ * 기존 Controller 스타일에서는 전형적인 방식이었으나 현재 @MVC 모델에서는 이를 대신할 만한 좋은 기능이 많아서
+ * 전만큼은 사용되지 않는 방식
+ * 기존 Controller 스타일의 코드를 @MVC 스타일로 변경 할 경우 사용
+ * 
+ * Ex)	스프링 2.5나 그 이전에 자주 사용되던 Controller 타입의 클래스
+ * 		public class HelloController implements Controller {
+ * 			@Override
+ * 			public ModelAndView handleRequest(
+ * 				HttpServletRequest request, HttpServletResponse response)throws Exception{
+ * 				String name = request.getParameter("hello");
+ * 				return new ModelAndView("hello.jsp").addObject("name",name);
+ * 			}	
+ * 		}
+ * 
+ * 		=> 위 코드를 @MVC 스타일로 변환 : @Controller 인터체이스 구현 삭제, 
+ * 			@Controller, @RequestMapping 부여
+ * 
+ * 		@Controller
+ * 		public class HelloController{
+ * 			@RequestMapping("/hello")
+ * 			public ModelAndView handleRequest(HttpServletRequest request, 
+ * 				HttpServletResponse response){
+ * 				String name = request.getPArameter("hello");
+ * 				return new ModelAndView("hello.jsp").addObject("name",name);
+ * 			}
+ * 		}
+ * 
+ * 		=> 보다 @MVC Controller 답게 작성 : HttpServletRequest 대신 @RequestParam 사용해 파라미터 값 받음,
+ * 			메소드 명 의미품는 것으로 변경, 필요한 경우 아니라면 throws Exception 제거, Model 파라미터 사용
+ * 		@Controller
+ * 		public class HelloController{
+ * 			@RequestMapping("/hello")
+ * 			public ModelAndView helloMethod(@RequestParam String name, Model model){
+ * 				model.addAttribute("name",name);
+ * 				return new ModelAndView("hello");
+ * 			}
+ * 		}		
+ * 
+ * 6. String인 경우
+ * =>1. 리턴하는 문자열이 뷰의 이름, 2. model 객체에 data 를 담는 경우 리턴 문자열이름의 뷰로 데이터 함께 전달
+ * 위 에 작성한 마지막 예제 코드와 연계하여 생각 했을 때, String 리턴 타입으로 뷰 이름만을 전달해도 같은 효과 볼 수 있음
+ * 	=> 보다 간결해지는 코드
+ * 	Ex) @Controller
+ * 		public class HelloController{
+ * 			@RequestMapping("/hello")
+ * 			public String helloMethod(@RequestParam String name, Model model){
+ * 				model.addAttribute("name",name);
+ * 				return "hello";
+ * 			}
+ * 		}
+ * 
+ * 7. void
+ * => RequestToViewNameResolver 전략을 통해 자동 생성되는 뷰 이름 사용
+ * URL과 뷰 이름을 일관되게 통일 할 수 있다면 적극적으로 활용해볼만한 전략
+ * 위 String 예제와 연계하여 생각 할 경우 보다 간결한 코드 작성 가능
+ * 	Ex) @RequestMapping("/hello")
+ * 		public void helloMethod(@RequestPara String name, Model model){
+ * 			model.addAttribute("name", name);
+ * 		}
+ *  
+ *  RequestToViewNameResolver가 자동으로 view 이름을 hello로 만들어줌 (추가 Study 필요)
+ *  		=> WEB-INF/view/hello.jsp 사용 하게 됨
+ * 
+ * 8. 모델 오브젝트
+ * => RequestToViewNameResolver를 사용해 뷰 이름을 자동으로 생성하고, 모델에 추가해야 하는 객체가 하나 뿐이라면
+ * 모델 파라미터를 받아 저장하는 대신 모델 객체를 바로 리턴해도 된다. 
+ * 스프링은 전달해야 할 객체가 미리 지정된 타입이나 void가 아닌 단순 객체라면 이를 모델 객체로 인식하여 자동으로 모델에 
+ * 추가해준다. 이때 모델 이름은 리턴값의 이름을 따른다
+ * 		=>1 번 항목 @ModelAttribute의 내용과 동일
+ * 	Ex)	@RequestMapping("/view")
+ * 		public User view(@RequestParam int id){
+ * 			return service.getUser(id);
+ * 		}
+ * 
+ * 파라미터로 유저 아이디를 얻어와서 내부 로직(서비스, dao 등)를 통해서 User 객체를 리턴한다. 
+ * 리턴 타입으로 지정된 User 타입 객체는 자동으로 모델 객체에 추가되고 모델 이름은 user가 된다.
+ * 클래스이름과 다르게 모델 이름을 직접 지정하고싶은 경우 @ModelAttribute("모델이름") 방식으로 지정한다.
+ * 
+ * 9. Map / Model / ModelMap
+ * => 리턴값을 Map 타입으로 지정하는 것은 되도록이면 피하는 것이 좋다. 단일 객체로 자동 등록 되는 방식으로 
+ * Map 을 리턴 값으로 지정하는 경우, Map userMap 이라는 객체를 리턴한다고 해서 map 이라는 자동 등록 객체에
+ * 값이 생성되는 것이 아니기 때문이다. 이는 혼란을 초래한다. model 파라미터에 답고싶은 map 객체를 담아서 넘기는 것이
+ * 바람직하다.
+ * 
+ * 10.view
+ * => 스트링 리턴 타입은 뷰 이름으로 인식한다. 이와 비슷하게 뷰 객체를 리턴값으로 넘기고 싶다면 리턴값을 View 로 선언하고
+ * View 객체를 리턴값으로 넘기면 된다.
+ * 
+ * 	Ex)	public class UserController{
+ * 			@AutoWired
+ * 			MarshallingView userXmlView;
+ * 
+ * 			@RequestMapping("/user/xml")
+ * 			public View view(@RequestParam int id){
+ * 				...
+ * 				return this.userXmlView;
+ * 			}
+ * 		}
+ *  
+ * 11. @ResponseBody
+ * => @ResponseBody는 @RequestBody와 비슷한 방식으로 동작한다. @ResponseBody가 메소드 레벨에 부여되면
+ * 메소드가 리턴하는 객체는 뷰를 통해 결과를 생성하는 모델로 사용되는 것이 아니라
+ * 메세지 콘버터를 통해 바로 HTTP 응답의 메세지 본문으로 전환된다.
+ * 
+ * 
+ * 
  */
 
 @Controller
@@ -249,8 +409,14 @@ public class BoardController {
 		 * 변수 값이 true/false 로 보여지는 것을 확인, 이 부분에 대해서는 확인 중
 		 * 
 		 *  위 문제상황이 생겼던 이유는 선언한 변수명이 예약어나 이미 시스템 상에서 정해진 명칭 이었기 때문인 것으로 보인다.
-		 *  var testMessage 를 var testM 이나 var testMsge 로 바꾸고 변수 입력하자 출력 정상적으로 되는 것 확인됨*/
+		 *  var testMessage 를 var testM 이나 var testMsge 로 바꾸고 변수 입력하자 출력 정상적으로 되는 것 확인됨
+		 *  var testMessage 라는 변수를 새로운 값으로 초기화해 사용할 경우 계속해서 true 값 만 return 함*/
 		model.asMap().put("testMessage", cri.getTestMessage());
+	}
+	
+	@RequestMapping(value = "/listPage", method = RequestMethod.GET)
+	public void listPage(Criteria cri, Model model) throws Exception{
+		
 	}
 	
 	/**
