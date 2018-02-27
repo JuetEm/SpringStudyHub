@@ -10,11 +10,18 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 import org.zerock.domain.BoardVO;
+import org.zerock.domain.Criteria;
 import org.zerock.persistence.BoardDAO;
 
 /**
  * @author	: Juet
  * @date	: 2018. 1. 23.
+ * @desc	: 
+ * 
+ */
+/**
+ * @author	: Juet
+ * @date	: 2018. 2. 26.
  * @desc	: 
  * 
  */
@@ -69,6 +76,17 @@ public class BoardServiceImpl implements BoardService {
 		return dao.listAll();
 	}
 	
+	
+	
+	/* (non-Javadoc)
+	 * @see org.zerock.service.BoardService#listCriteria(org.zerock.domain.Criteria)
+	 */
+	@Override
+	public List<BoardVO> listCriteria(Criteria cri) throws Exception {
+		// TODO Auto-generated method stub
+		return dao.listCriteria(cri);
+	}
+
 	public String nullCheck(BoardVO board){
 		String msg = "";
 		ArrayList<String> nMList = new ArrayList<>();

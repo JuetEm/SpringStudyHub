@@ -20,6 +20,9 @@ public class BoardVO {
 	private Date regdate;
 	private int viewcnt;
 	
+	/*MVC 모델 변수 타입 객체 반환 도중 변수 임의 추가를 위한 Test*/
+	private String testMessage;
+	
 	public Integer getBno() {
 		return bno;
 	}

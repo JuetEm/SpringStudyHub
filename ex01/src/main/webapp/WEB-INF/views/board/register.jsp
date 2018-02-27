@@ -107,7 +107,11 @@
 					}
 					
 					if(result == ""){
-						 self.location = "/board/listAll";
+					var formObj = $('form[role=form]');
+						 /* self.location = "/board/listAll"; */
+						 formObj.attr("action","/board/register");
+						 formObj.attr("mothod","post");
+						 formObj.submit();
 					}else{
 						if(null == tempWriter || "" == tempWriter){
 							var message = result.substring(0, result.length-2);

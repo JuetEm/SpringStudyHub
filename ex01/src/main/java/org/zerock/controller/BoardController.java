@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.zerock.domain.BoardVO;
+import org.zerock.domain.Criteria;
 import org.zerock.service.BoardService;
 
 /**
@@ -107,7 +108,7 @@ public class BoardController {
 //		String nullCheck = service.nullCheck(board);
 //		logger.info("nullCheck is called!!! ===> "+nullCheck);
 //		if(nullCheck.equals("")){
-//			service.regist(board);
+			service.regist(board);
 //			rttr.addFlashAttribute("msg", "SUCCESS");
 //			return "redirect:/board/listAll";
 //		}else{
@@ -190,6 +191,66 @@ public class BoardController {
 //		model.addAttribute("msg", "SUCCESS");
 		
 		return "redirect:/board/listAll";
+	}
+	
+	@RequestMapping(value = "/modify", method = RequestMethod.GET)
+	public void modifyGET(int bno, Model model) throws Exception {
+		model.addAttribute(service.read(bno));
+	}
+	
+	@RequestMapping(value = "/modify", method = RequestMethod.POST)
+	public String modifyPOST(BoardVO board, RedirectAttributes rttr) throws Exception {
+		
+		logger.info("mod post...........");
+		
+		service.modify(board);
+		rttr.addFlashAttribute("msg", "SUCCESS");
+		
+		return "redirect:/board/listAll";
+	}
+	
+	/**
+	 * @author	: Juet
+	 * @date	: 2018. 2. 26.
+	 * @desc	: 해당 페이지의 리스트를 DB에서 조회하는 메서드
+	 * 				
+	 * 				스프링 MVC 컨트롤러는 특정 URL에 해당하는 메소드를 실행할 때, 파라미터의
+	 * 				타입을 보고, 해당 객체를 자동으로 생성해 냅니다. 
+	 * 				파라미터가 자동으로 수집되기 때문에, 바로 이전에 마들 Criteria라는 클래스를 그대로
+	 * 				사용할 수 있습니다.
+	 * 
+	 * 				리스트 페이지는 기본적으로 GET방식 사용.(<= 대부분의 조회는 GET 방식)
+	 * 				개발 시에는 GET 방식의 경우 URL을 조작하는 것만으로도 정상적인 동작을 확인 할 수 있음
+	 * 
+	 * 				위 스프링 MVC 컨트롤러의 메소드 파라미터 타입 해당 객체 자동 생성 특징과
+	 * 				GET 방식의 URL 조작 동작 확인 특징이 만나면 
+	 * 				Criteria cri 도메인 클래스에 선언한 타입의 객체를 URL에 변수로 붙여
+	 * 				Test 가능
+	 * 
+	 * 				Ex) localhost:8080/board/listCri?page=3&perPageNum=20/
+	 * 				위와 같은 예의 경우 Criteria 클래스의 int page 변수와 int perPageNum 변수에
+	 * 				page =3, perPageNum =20의 값이 자동으로 맵핑됩
+	 * 
+	 * 				
+	 *
+	 * @param cri
+	 * @param model
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/listCri", method = RequestMethod.GET)
+	public void listAll(Criteria cri, Model model) throws Exception{
+		
+		logger.info("show list Page with Criteria..........."+cri.getTestMessage());
+		
+		model.addAttribute("list",service.listCriteria(cri));
+		/*model에 service dao mapper db 흐름의 처리 외의 변수를 추가로 담는 Test 진행 
+		 * 아래와 같이 model.asMap().put으로 변수 담아주니 JSP 단에서 ${testMessage}로 변수 값 읽을 수 있음
+		 * var testMessage = '${testMessage}' 로 JSP 변수로 받아서 사용하려고 alert() 띄우자
+		 * 변수 값이 true/false 로 보여지는 것을 확인, 이 부분에 대해서는 확인 중
+		 * 
+		 *  위 문제상황이 생겼던 이유는 선언한 변수명이 예약어나 이미 시스템 상에서 정해진 명칭 이었기 때문인 것으로 보인다.
+		 *  var testMessage 를 var testM 이나 var testMsge 로 바꾸고 변수 입력하자 출력 정상적으로 되는 것 확인됨*/
+		model.asMap().put("testMessage", cri.getTestMessage());
 	}
 	
 	/**
