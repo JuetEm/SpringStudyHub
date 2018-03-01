@@ -87,6 +87,15 @@ public class BoardServiceImpl implements BoardService {
 		return dao.listCriteria(cri);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.zerock.service.BoardService#listCountCriteria(org.zerock.domain.Criteria)
+	 */
+	@Override
+	public int listCountCriteria(Criteria cri) throws Exception {
+		// TODO Auto-generated method stub
+		return dao.countPaging(cri);
+	}
+
 	public String nullCheck(BoardVO board){
 		String msg = "";
 		ArrayList<String> nMList = new ArrayList<>();

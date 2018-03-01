@@ -89,4 +89,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		]]>
 	</select>
 	
+	<select id="countPaging" resultType="int">
+		<![CDATA[
+		select
+			count(bno)
+		from
+			tbl_board
+		where
+			bno > 0
+		]]>
+	</select>
+	
 </mapper>

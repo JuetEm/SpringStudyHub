@@ -96,5 +96,16 @@ public class BoardDAOImpl implements BoardDAO {
 		// TODO Auto-generated method stub
 		return session.selectList(namespace+".listCriteria", cri);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.zerock.persistence.BoardDAO#countPaging(org.zerock.domain.Criteria)
+	 */
+	@Override
+	public int countPaging(Criteria cri) throws Exception {
+		// TODO Auto-generated method stub
+		return session.selectOne(namespace+".countPaging", cri);
+	}
+	
+	
 	
 }

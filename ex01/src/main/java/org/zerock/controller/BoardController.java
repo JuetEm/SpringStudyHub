@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.zerock.domain.BoardVO;
 import org.zerock.domain.Criteria;
+import org.zerock.domain.PageMaker;
 import org.zerock.service.BoardService;
 
 /**
@@ -417,6 +418,15 @@ public class BoardController {
 	@RequestMapping(value = "/listPage", method = RequestMethod.GET)
 	public void listPage(Criteria cri, Model model) throws Exception{
 		
+		logger.info(cri.toString());
+		
+		model.addAttribute("list", service.listCriteria(cri));
+		PageMaker pageMaker = new PageMaker();
+		pageMaker.setCri(cri);
+//		pageMaker.setTotalCount(131);
+		pageMaker.setTotalCount(service.listCountCriteria(cri));
+		
+		model.addAttribute("pageMaker", pageMaker);
 	}
 	
 	/**
@@ -478,5 +488,10 @@ public class BoardController {
 		 * 다른 jsp 파일로 맵핑시키면 NewFile.jsp 화면은 나타나지 않고, 맵핑된 파일의 화면으로 바로 이동함. 
 		 * Controller에 정의된 메서드는 아무 기능 없이 화면을 이어주는 방식만으로도 사용 가능함*/
 //		return "/board/NewFile";
+	}
+	
+	@RequestMapping(value ="/templateStudy", method=RequestMethod.GET)
+	public void testTemplateStudy(){
+		logger.info("templateStudy JSP File just has been called");
 	}
 }
