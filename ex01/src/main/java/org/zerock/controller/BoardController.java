@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -328,6 +329,12 @@ public class BoardController {
 		model.addAttribute(service.read(bno));
 	}
 	
+	@RequestMapping(value ="/readPage", method = RequestMethod.GET)
+	public void read(@RequestParam("bno") int bno, @ModelAttribute("cri") Criteria cri
+			, Model model)throws Exception{
+		model.addAttribute(service.read(bno));
+	}
+	
 	/**
 	 * @author	: Juet
 	 * @date	: 2018. 1. 26.
@@ -354,6 +361,20 @@ public class BoardController {
 		return "redirect:/board/listAll";
 	}
 	
+	@RequestMapping(value="/removePage", method=RequestMethod.POST)
+	public String remove(@RequestParam("bno") int bno,
+			Criteria cri,
+				RedirectAttributes rttr)throws Exception{
+		
+		service.remove(bno);
+		
+		rttr.addAttribute("page",cri.getPage());
+		rttr.addAttribute("perPageNum",cri.getPerPageNum());
+		rttr.addFlashAttribute("msg", "SUCCESS");
+		
+		return "redirect:/board/listPage";
+	}
+	
 	@RequestMapping(value = "/modify", method = RequestMethod.GET)
 	public void modifyGET(int bno, Model model) throws Exception {
 		model.addAttribute(service.read(bno));
@@ -368,6 +389,32 @@ public class BoardController {
 		rttr.addFlashAttribute("msg", "SUCCESS");
 		
 		return "redirect:/board/listAll";
+	}
+	
+	@RequestMapping(value="/modifyPage", method = RequestMethod.GET)
+	public void modifyPagingGET(@RequestParam("bno") int bno
+			, @ModelAttribute("cri") Criteria cri
+			, Model model)throws Exception{
+		model.addAttribute(service.read(bno));
+	}
+	
+	@RequestMapping(value="/modifyPage", method = RequestMethod.POST)
+	public String modifyPagingPOST(BoardVO board,
+			Criteria cri, 
+				RedirectAttributes rttr)throws Exception{
+		
+		service.modify(board);
+		
+		/*JSP 파일에서 변수를 호출하는 방식 '=> cri.page' 처럼 변수를 호출 할 수도 있겠으나
+		 * Controller에서는 domain 객체 Criteria 에 대하여 getter, setter 를 사용해서 접근
+		 * private으로 선언 되어 있는 변수들.*/
+		
+		rttr.addAttribute("page", cri.getPage());
+		rttr.addAttribute("perPageNum", cri.getPerPageNum());
+		rttr.addFlashAttribute("msg", "SUCCESS");
+		
+		return "redirect:/board/listPage";
+		
 	}
 	
 	/**
